@@ -4,20 +4,21 @@ import { MAX_CHARACTERS } from "../lib/constants";
 
 export default function FeedbackForm() {
   const [text, setText] = useState("");
+  const charCount = MAX_CHARACTERS - text.length;
 
-  const charCount = 150 - text.length;
+  const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newText = event.target.value;
+    if (newText.length > MAX_CHARACTERS) {
+      return;
+    }
+    setText(newText);
+  };
 
   return (
     <form className="form">
       <textarea
         value={text}
-        onChange={(event) => {
-          const newText = event.target.value;
-          if (newText.length > MAX_CHARACTERS) {
-            return;
-          }
-          setText(event.target.value);
-        }}
+        onChange={handleChange}
         id="feedback-textarea"
         placeholder=""
         spellCheck={false}
