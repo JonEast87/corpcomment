@@ -10,36 +10,37 @@ export default function FeedbackList() {
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    setIsLoading(true);
+    const fetchFeedbackItems = async () => {
+      setIsLoading(true);
 
-    fetch(
-      // make request to api for data
-      "https://bytegrad.com/course-assets/projects/corpcomment/api/feedbacks"
-    )
-      // receeived the data in json format
-      .then((response) => {
+      try {
+        const response = await fetch(
+          // make request to api for data
+          "https://bytegrad.com/course-assets/projects/corpcomment/api/feedbacks"
+        );
+
         if (!response.ok) {
           throw new Error();
         }
-        return response.json();
-      })
-      .then((data) => {
+        // receeived the data in json format
+        const data = await response.json();
         // converting that data to javascript to be used in realtime
         setFeedbackItems(data.feedbacks);
-        setIsLoading(false);
-      })
-      .catch(() => {
-        // network error, not 2xx response, or JSON parsing error
-        setErrorMessage("Something went wrong");
-        setIsLoading(false);
-      });
+      } catch (error) {
+        setErrorMessage("Something went wrong. Please try again later.");
+      }
+
+      setIsLoading(false);
+    };
+
+    fetchFeedbackItems();
   }, []);
 
   return (
     <ol className="feedback-list">
-      {isLoading ? <Spinner /> : null}
+      {isLoading && <Spinner />}
 
-      {errorMessage ? <ErrorMessage message={errorMessage} /> : null}
+      {errorMessage && <ErrorMessage message={errorMessage} />}
 
       {feedbackItems.map((feedbackItem) => (
         <FeedbackItem key={feedbackItem["id"]} feedbackItem={feedbackItem} />
