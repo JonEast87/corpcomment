@@ -9,12 +9,21 @@ export default function FeedbackItem({ feedbackItem }: FeedbackItemProps) {
   const [open, setOpen] = useState(false);
   const [upvoteCount, setUpvoteCount] = useState(feedbackItem.upvoteCount);
 
+  // creating seperate function to prevent event bubbling in the dom
+  const handleUpvote = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    setUpvoteCount((prev) => ++prev);
+    // prevents upvote on an item that has already been upvoted
+    e.currentTarget.disabled = true;
+    // call to be made to stop bubbling
+    e.stopPropagation();
+  };
+
   return (
     <li
       onClick={() => setOpen((prev) => !prev)}
       className={`feedback ${open ? "feedback--expand" : ""}`}
     >
-      <button onClick={() => setUpvoteCount((prev) => ++prev)}>
+      <button onClick={handleUpvote}>
         <TriangleUpIcon />
         <span>{upvoteCount}</span>
       </button>
