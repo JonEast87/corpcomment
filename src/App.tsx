@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 import Footer from "./components/layout/Footer";
 import Container from "./components/layout/Container";
@@ -11,17 +11,29 @@ function App() {
   const [errorMessage, setErrorMessage] = useState("");
   const [selectedCompany, setSelectedCompany] = useState("");
 
-  const filteredFeedbackItems = selectedCompany
-    ? feedbackItems.filter(
-        (feedbackItem) => feedbackItem.company === selectedCompany
-      )
-    : feedbackItems;
+  // using useMemo to prevent this algorithm from running during every re-render
+  const filteredFeedbackItems = useMemo(
+    () =>
+      selectedCompany
+        ? feedbackItems.filter(
+            (feedbackItem) => feedbackItem.company === selectedCompany
+          )
+        : feedbackItems,
+    // only on changes to these variables will it run
+    [feedbackItems, selectedCompany]
+  );
 
-  const companyList = feedbackItems
-    .map((item) => item.company)
-    .filter((company, index, array) => {
-      return array.indexOf(company) === index;
-    });
+  // using useMemo to prevent this algorithm from running during every re-render
+  const companyList = useMemo(
+    () =>
+      feedbackItems
+        .map((item) => item.company)
+        .filter((company, index, array) => {
+          return array.indexOf(company) === index;
+        }),
+    // only on changes to this variable will it run
+    [feedbackItems]
+  );
 
   const handleAddToList = async (text: string) => {
     const companyName = text
